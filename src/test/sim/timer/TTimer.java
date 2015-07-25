@@ -50,6 +50,10 @@ public class TTimer {
 		timer = new TestTimer();
 		timer.max_runs=10;
 	}
+	
+	/**
+	 * Testa se o timer executa as ordens no tempo correto
+	 */
 
 	@Test
 	public void testStart() {
