@@ -8,10 +8,11 @@ import sim.timer.TimedTask;
 import sim.timer.Timer;
 
 public class ExponentialSource extends Node{
-	private static final String inTime = "EXP_SOURCE_IN_TIME";
+	private static final String inTime = "ARRIVAL_TIME";
 	
 	Sink sink;
 	ExponentialGenerator exp;
+	
 	
 	class Arrival extends TimedTask implements Runnable{
 
@@ -27,13 +28,13 @@ public class ExponentialSource extends Node{
 		exp = new ExponentialGenerator(1);
 	}
 
-	public ExponentialSource(Double lambda){
-		exp = new ExponentialGenerator(lambda);
+	public ExponentialSource(Double rate){
+		exp = new ExponentialGenerator(rate);
 	}	
 
 		
-	public ExponentialSource setTax(Double exponentialMedia){
-		exp = new ExponentialGenerator(exponentialMedia);
+	public ExponentialSource setRate(Double rate){
+		exp = new ExponentialGenerator(rate);
 		return this;
 	}
 		

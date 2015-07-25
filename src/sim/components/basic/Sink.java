@@ -4,13 +4,13 @@ package sim.components.basic;
 public interface Sink {
 
 	/**
-	 * Se conecta a um source para poder puxar, quando 
+	 * Source pode enviar Jobs para este objeto
 	 * @param source
 	 */
 	public void connectFrom ( Source source );
 	
 	/**
-	 * recebe job
+	 * envia Job para ser utilizado por este objeto
 	 * @param job objeto a ser enviado para sink
 	 */
 	public void send(Job job);

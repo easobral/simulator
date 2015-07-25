@@ -2,13 +2,8 @@ package sim.components.basic;
 
 public class Node implements Sink, Source {
 
-	Double meanNumJobs=0D;
-	Double lastJobTime=0D;
-
 	@Override
 	public void connectTo(Sink sink) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -18,14 +13,11 @@ public class Node implements Sink, Source {
 
 	@Override
 	public boolean canGet() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void connectFrom(Source source) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -34,7 +26,6 @@ public class Node implements Sink, Source {
 
 	@Override
 	public boolean canSend() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
