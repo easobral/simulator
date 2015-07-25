@@ -12,11 +12,12 @@ public class SystemStatistics {
 	
 	Node entryPoint;
 	Node exitPoint;
-	
 	OutputStream out;
+	String id;
 	
 	public SystemStatistics() {
 	}
+	
 	
 	public Double utilization(){
 		return null;
