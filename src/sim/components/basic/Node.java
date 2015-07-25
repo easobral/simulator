@@ -1,7 +1,12 @@
 package sim.components.basic;
 
+import java.util.Set;
+
 public class Node implements Sink, Source {
 
+	Set<ArrivalListener> alistener;
+	Set<DepartureListener> dlistener;
+	
 	@Override
 	public void connectTo(Sink sink) {
 	}
@@ -21,7 +26,7 @@ public class Node implements Sink, Source {
 	}
 
 	@Override
-	public void send(Job job) {
+	public void send(Job job) {		
 	}
 
 	@Override
