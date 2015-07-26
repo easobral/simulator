@@ -31,5 +31,9 @@ public class Job {
 	
 	public Long getLong(String property){
 		return Long.parseLong(_property.get(property));
-	}	
+	}
+	
+	public boolean contains(String property){
+		return _property.containsKey(property);
+	}
 }

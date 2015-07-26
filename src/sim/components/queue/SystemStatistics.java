@@ -24,8 +24,11 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 	
 	Integer jobs;
 	Double job_x_time;
-	Double utilization;
+	Double time_in_use;
+	Double last_update;
+	Double total_time;
 	
+
 	public SystemStatistics(Node entryNode, Node exitNode,
 			OutputStream arrivalLog, OutputStream departureLog,
 			String id) {
@@ -40,16 +43,15 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 	
 	
 	public Double utilization(){
-		return null;
+		return time_in_use/Timer.now();
 	}
 	
 	public Double meanJobInSystem(){
-		return null;
+		return job_x_time/Timer.now();
 	}
 	
 	public Double meanTimeInSystem(){
-		return null;
-		
+		return null;		
 	}
 
 
@@ -61,7 +63,10 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 
 	@Override
 	public void onArrival(Job job) {
+		Double time_slice = Timer.now()-last_update;
 		job.addDouble(id+ARRAIVAL_SUFIX, Timer.now());
+		job_x_time += jobs * time_slice;
+		time_in_use += time_slice;
 	}
 
 }
