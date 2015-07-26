@@ -7,12 +7,20 @@ import sim.timer.exception.TaskInPastException;
 public class Timer {
 	
 	public static Timer timer;
+
+	public static Double now(){
+		return timer.time();
+	}
+	
+	public static void addTaskS(TimedTask task){
+		timer.addTask(task);
+	}
 	
 	private PriorityQueue<TimedTask> taskQueue;
 	private boolean _should_stop;
 	private double _time;
 	public Double max_time =1000D;
-
+	
 	public Timer() {
 		_should_stop = false;
 		taskQueue = new PriorityQueue<TimedTask>();
@@ -59,9 +67,6 @@ public class Timer {
 		task.run();	
 	}
 	
-	public static Double now(){
-		return timer.time();
-	}
 	
 	public void beforeLoop(){
 		

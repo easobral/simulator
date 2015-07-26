@@ -6,26 +6,35 @@ import sim.components.basic.ArrivalListener;
 import sim.components.basic.DepartureListener;
 import sim.components.basic.Job;
 import sim.components.basic.Node;
+import sim.timer.Timer;
 
 /**
  * @author eduardo
  *
  */
 public class SystemStatistics implements ArrivalListener, DepartureListener {
+	static public String ARRAIVAL_SUFIX="_arraival";
+	static public String DEPARTURE_SUFIX="_departure";
 	
 	Node entryPoint;
 	Node exitPoint;
-	OutputStream out;
+	OutputStream arrivalLog;
+	OutputStream departureLog;
 	String id;
 	
-	Integer jobs;	
+	Integer jobs;
+	Double job_x_time;
+	Double utilization;
 	
-	public SystemStatistics(Node entryNode, Node exitNode, OutputStream out, String id) {
+	public SystemStatistics(Node entryNode, Node exitNode,
+			OutputStream arrivalLog, OutputStream departureLog,
+			String id) {
 		entryNode.addArrivalListener(this);
 		exitNode.addDepartureListener(this);
 		entryPoint=entryNode;
 		exitPoint=exitNode;
-		this.out=out;
+		this.arrivalLog=arrivalLog;
+		this.departureLog=departureLog;
 		this.id=id;
 	}
 	
@@ -46,15 +55,13 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 
 	@Override
 	public void onDeparture(Job job) {
-		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
 	public void onArrival(Job job) {
-		// TODO Auto-generated method stub
-		
+		job.addDouble(id+ARRAIVAL_SUFIX, Timer.now());
 	}
 
 }
