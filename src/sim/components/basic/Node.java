@@ -7,12 +7,12 @@ public class Node implements Sink, Source {
 
 	Set<ArrivalListener> alistener;
 	Set<DepartureListener> dlistener;
-	
+
 	public Node() {
-		alistener= new HashSet<>(4);
-		dlistener= new HashSet<>(4);
+		alistener = new HashSet<>(4);
+		dlistener = new HashSet<>(4);
 	}
-	
+
 	@Override
 	public void connectTo(Sink sink) {
 	}
@@ -32,33 +32,32 @@ public class Node implements Sink, Source {
 	}
 
 	@Override
-	public void send(Job job) {		
+	public void send(Job job) {
 	}
 
 	@Override
 	public boolean canSend() {
 		return false;
 	}
-	
-	public void addArrivalListener(ArrivalListener al){
+
+	public void addArrivalListener(ArrivalListener al) {
 		alistener.add(al);
 	}
-	
-	public void addDepartureListener(DepartureListener dl){
+
+	public void addDepartureListener(DepartureListener dl) {
 		dlistener.add(dl);
 	}
-	
-	public void onDeparture(Job job){
-		for( DepartureListener listener : dlistener ){
+
+	public void onDeparture(Job job) {
+		for (DepartureListener listener : dlistener) {
 			listener.onDeparture(job);
 		}
 	}
-	
-	public void onArrival(Job job){
-		for (ArrivalListener listener: alistener){
+
+	public void onArrival(Job job) {
+		for (ArrivalListener listener : alistener) {
 			listener.onArrival(job);
 		}
 	}
-	
 
 }

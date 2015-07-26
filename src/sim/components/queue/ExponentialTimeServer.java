@@ -36,6 +36,7 @@ public class ExponentialTimeServer extends SimServer {
 		
 		@Override
 		public void run() {
+			onDeparture(servingJob);
 			sink.send(servingJob);
 			servingJob = null;
 			lastChange=Timer.now();
@@ -74,6 +75,7 @@ public class ExponentialTimeServer extends SimServer {
 
 	@Override
 	public void send(Job job) {
+		onArrival(job);
 		if (servingJob == null) {
 			servingJob = job;
 			serveJob();
