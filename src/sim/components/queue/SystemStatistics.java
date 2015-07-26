@@ -14,8 +14,8 @@ import sim.timer.Timer;
  *
  */
 public class SystemStatistics implements ArrivalListener, DepartureListener {
-	static public String ARRAIVAL_SUFIX="_arraival";
-	static public String DEPARTURE_SUFIX="_departure";
+	static public final String ARRAIVAL_SUFIX="_arraival";
+	static public final String JOB_ID="_job";
 	
 	Node entryPoint;
 	Node exitPoint;
@@ -53,13 +53,28 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 	}
 	
 	public Double meanTimeInSystem(){
-		return total_time_on_sistem/total_jobs;
+		return total_jobs>0?total_time_on_sistem/total_jobs:0;
 	}
 
 
 	@Override
 	public void onDeparture(Job job) {
-		
+		Double time_slice = Timer.now()-last_update;
+		Double arrival_time = job.getDouble(id+ARRAIVAL_SUFIX);
+		job_x_time += jobs_in_system * time_slice;
+		time_in_use += time_slice;
+		String job_id= job.getString(id+JOB_ID);
+		jobs_in_system--;
+		total_jobs++;
+		total_time_on_sistem=Timer.now()-arrival_time;
+		String line = job_id +" "+Timer.now()+"\n";
+		last_update=Timer.now();
+		try {
+			arrivalLog.write(line.getBytes());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 
@@ -70,9 +85,10 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 		job_x_time += jobs_in_system * time_slice;
 		time_in_use += jobs_in_system>0?time_slice:0;
 		String job_id= id +"_"+total_jobs;
+		job.addString(id+JOB_ID, job_id);
 		jobs_in_system++;
-		total_jobs++;
 		String line = job_id +" "+Timer.now()+"\n";
+		last_update=Timer.now();
 		try {
 			arrivalLog.write(line.getBytes());
 		} catch (IOException e) {
