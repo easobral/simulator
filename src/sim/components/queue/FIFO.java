@@ -13,7 +13,6 @@ import sim.timer.Timer;
 
 public class FIFO extends SimQueue {
 	private LinkedList<Job> queue;
-	private Sink sink;
 	OutputStream out;
 	
 	Double jobsSum=0D;
@@ -98,6 +97,7 @@ public class FIFO extends SimQueue {
 		registerChange();
 		Double arrival = j.getDouble(arrival_time);
 		totalTimeinQueue+=(Timer.now()-arrival);
+		onDeparture(j);
 		return j;
 	}
 	
@@ -116,6 +116,7 @@ public class FIFO extends SimQueue {
 		totalJobs++;
 		jobsSum+=queue.size()*(Timer.now()-lastChange);
 		queue.add(job);
+		onArrival(job);
 		if(sink!=null && sink.canSend()){
 			Job j = queue.poll();
 			Double arrival = j.getDouble(arrival_time);
