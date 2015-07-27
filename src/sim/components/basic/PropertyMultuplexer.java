@@ -26,10 +26,12 @@ public class PropertyMultuplexer extends Multiplexer {
 	@Override
 	public void send(Job job) {
 		super.send(job);
+		onArrival(job);
 		String id = job.getString(property);
 		if (null == id) return;		
 		Sink sink = map.get(id);
 		if (null == sink) return;
+		onDeparture(job);
 		sink.send(job);
 	}
 	

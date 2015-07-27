@@ -32,9 +32,11 @@ public class ProbabilityMultiplexer extends Multiplexer {
 	
 	@Override
 	public void send (Job job){
+		onArrival(job);
 		Double random = Math.random()*sum;
 		for(Tuple t : sinks){
 			if(random<t.mass){
+				onDeparture(job);
 				t.sink.send(job);
 				break;
 			}
