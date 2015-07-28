@@ -2,7 +2,6 @@ package sim.components.queue;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import sim.components.basic.DepartureListener;
 import sim.components.basic.Job;
 import sim.components.basic.Node;
@@ -16,14 +15,14 @@ public class DepartureFlowStatistics implements DepartureListener {
 	public DepartureFlowStatistics(Node node, OutputStream out) {
 		this.node = node;
 		node.addDepartureListener(this);
-		this.out=out;
+		this.out = out;
 	}
 
 	@Override
 	public void onDeparture(Job job) {
 		Double time = Timer.now();
 		Double interval = time - last_arrival;
-		String line = "" + time + " " + interval;
+		String line = "" + time + " " + interval+"\n";
 		last_arrival = time;
 		try {
 			out.write(line.getBytes());

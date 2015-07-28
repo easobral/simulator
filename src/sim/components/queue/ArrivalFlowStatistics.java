@@ -14,9 +14,10 @@ public class ArrivalFlowStatistics implements ArrivalListener {
 	Double last_arrival=0D;
 	Node node;
 
-	public ArrivalFlowStatistics(Node node) {
+	public ArrivalFlowStatistics(Node node, OutputStream out) {
 		this.node = node;
 		node.addArrivalListener(this);
+		this.out=out;
 	}
 
 	@Override
