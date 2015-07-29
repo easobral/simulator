@@ -1,4 +1,4 @@
-package sim.components.queue.generators;
+package sim.components.generators;
 
 import sim.math.ExponentialGenerator;
 import sim.timer.Timer;

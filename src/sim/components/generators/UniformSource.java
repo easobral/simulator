@@ -1,4 +1,4 @@
-package sim.components.queue.generators;
+package sim.components.generators;
 
 import sim.timer.Timer;
 

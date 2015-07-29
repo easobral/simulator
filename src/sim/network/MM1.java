@@ -2,9 +2,9 @@ package sim.network;
 
 import sim.components.basic.NullSink;
 import sim.components.basic.Sink;
-import sim.components.queue.ExponentialTimeServer;
+import sim.components.generators.ExponentialSource;
 import sim.components.queue.FIFO;
-import sim.components.queue.generators.ExponentialSource;
+import sim.components.servers.ExponentialTimeServer;
 import sim.timer.Timer;
 
 public class MM1 {
