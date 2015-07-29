@@ -1,52 +1,25 @@
 package sim.components.queue.generators;
 
-import sim.components.basic.Job;
-import sim.components.basic.Node;
-import sim.components.basic.Sink;
-import sim.timer.TimedTask;
 import sim.timer.Timer;
 
-public class DeterministicSource extends Node {
-	private static final String inTime = "ARRIVAL_TIME";
-
-	Sink sink;
+public class DeterministicSource extends ArrivalGenerator {
 	Double time_between_arrivals;
-
-	class Arrival extends TimedTask implements Runnable {
-
-		public void run() {
-			Job job = new Job();
-			job.addDouble(inTime, Timer.timer.time());
-			sink.send(job);
-			programNextArrival();
-		}
-	}
 
 	public DeterministicSource() {
 		time_between_arrivals = 1D;
 	}
 
 	public DeterministicSource(Double time) {
-		time_between_arrivals = 1/time;
-	}
-	
-	public void setRate(Double time){
-		time_between_arrivals = 1/time;
+		time_between_arrivals = 1 / time;
 	}
 
-	public void start() {
-		programNextArrival();
+	public void setRate(Double time) {
+		time_between_arrivals = 1 / time;
 	}
 
-	private void programNextArrival() {
+	public void programNextArrival() {
 		Arrival next = new Arrival();
 		next.time = Timer.now() + time_between_arrivals;
 		Timer.timer.addTask(next);
 	}
-
-	@Override
-	public void connectTo(Sink sink) {
-		this.sink = sink;
-	}
-
 }
