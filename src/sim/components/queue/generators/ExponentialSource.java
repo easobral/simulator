@@ -1,4 +1,4 @@
-package sim.components.queue;
+package sim.components.queue.generators;
 
 import sim.components.basic.Job;
 import sim.components.basic.Node;

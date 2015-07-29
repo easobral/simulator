@@ -3,7 +3,7 @@ package sim.components.basic;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Node implements Sink, Source {
+public class Node implements Sink, Source, Startable {
 
 	Set<ArrivalListener> alistener;
 	Set<DepartureListener> dlistener;
@@ -58,6 +58,10 @@ public class Node implements Sink, Source {
 		for (ArrivalListener listener : alistener) {
 			listener.onArrival(job);
 		}
+	}
+
+	@Override
+	public void start() {
 	}
 
 }

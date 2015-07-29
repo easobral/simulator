@@ -1,4 +1,4 @@
-package sim.components.queue;
+package sim.components.statistics;
 
 import java.io.IOException;
 import java.io.OutputStream;

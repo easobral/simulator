@@ -4,26 +4,27 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import sim.components.basic.Node;
 import sim.components.basic.NullSink;
 import sim.components.basic.Sink;
-import sim.components.queue.DepartureFlowStatistics;
-import sim.components.queue.DeterministicSource;
-import sim.components.queue.ExponentialSource;
 import sim.components.queue.ExponentialTimeServer;
 import sim.components.queue.FIFO;
-import sim.components.queue.SystemStatistics;
+import sim.components.queue.generators.DeterministicSource;
+import sim.components.queue.generators.ExponentialSource;
+import sim.components.statistics.DepartureFlowStatistics;
+import sim.components.statistics.SystemStatistics;
 import sim.timer.Timer;
 
 public class FilaComReentrada {
-	public DeterministicSource source;
+	public Node source;
 	public FIFO queue;
 	public ExponentialTimeServer server;
 	public Sink nSink;
 	public SystemStatistics ss;
 	public DepartureFlowStatistics ds;
 
-	public FilaComReentrada(Double sourceLambda, Double serverLambda) {
-		source = new DeterministicSource(sourceLambda);
+	public FilaComReentrada(Node source, Double serverLambda) {
+		this.source = source;
 		queue = new FIFO();
 		server = new ExponentialTimeServer(serverLambda);
 		nSink = new NullSink();
@@ -63,8 +64,8 @@ public class FilaComReentrada {
 	public static void main(String[] argc) {
 		Double lambda = 0.9D;
 		Double mi = 1D;
-
-		FilaComReentrada n = new FilaComReentrada(lambda, mi);
+		Node source = new DeterministicSource(lambda);
+		FilaComReentrada n = new FilaComReentrada(source, mi);
 
 		n.start();
 		// System.out.println("Tempo na fila: " + n.queue.meanQueueTime());
@@ -90,7 +91,8 @@ public class FilaComReentrada {
 
 			for (lambda = 0.05; lambda <= 0.91; lambda += 0.05) {
 				System.out.println("Para lambda = " + lambda + ":");
-				n = new FilaComReentrada(lambda, mi);
+				source = new DeterministicSource(lambda);
+				n = new FilaComReentrada(source, mi);
 				n.start();
 				System.out.println("Numero medio de clientes no sistema: " + n.ss.meanJobInSystem());
 				System.out.println("Tempo medio no sistema: " + n.ss.meanTimeInSystem());

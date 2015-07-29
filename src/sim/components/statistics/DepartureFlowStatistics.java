@@ -1,31 +1,29 @@
-package sim.components.queue;
+package sim.components.statistics;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
-import sim.components.basic.ArrivalListener;
+import sim.components.basic.DepartureListener;
 import sim.components.basic.Job;
 import sim.components.basic.Node;
 import sim.timer.Timer;
 
-public class ArrivalFlowStatistics implements ArrivalListener {
-
+public class DepartureFlowStatistics implements DepartureListener {
 	OutputStream out;
-	Double last_arrival=0D;
+	Double last_arrival = 0D;
 	Node node;
 
-	public ArrivalFlowStatistics(Node node, OutputStream out) {
+	public DepartureFlowStatistics(Node node, OutputStream out) {
 		this.node = node;
-		node.addArrivalListener(this);
-		this.out=out;
+		node.addDepartureListener(this);
+		this.out = out;
 	}
 
 	@Override
-	public void onArrival(Job job) {
+	public void onDeparture(Job job) {
 		Double time = Timer.now();
 		Double interval = time - last_arrival;
-		String line = "" + time + " " + interval;
-		last_arrival=time;
+		String line = "" + time + " " + interval+"\n";
+		last_arrival = time;
 		try {
 			out.write(line.getBytes());
 		} catch (IOException e) {
