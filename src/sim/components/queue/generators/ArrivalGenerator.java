@@ -15,6 +15,7 @@ public abstract class ArrivalGenerator extends Node {
 		public void run() {
 			Job job = new Job();
 			job.addDouble(inTime, Timer.timer.time());
+			onDeparture(job);
 			sink.send(job);
 			programNextArrival();
 		}

@@ -4,26 +4,25 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import sim.components.basic.Node;
 import sim.components.basic.NullSink;
 import sim.components.basic.Sink;
 import sim.components.queue.ExponentialTimeServer;
 import sim.components.queue.FIFO;
+import sim.components.queue.generators.ArrivalGenerator;
 import sim.components.queue.generators.DeterministicSource;
-import sim.components.queue.generators.ExponentialSource;
 import sim.components.statistics.DepartureFlowStatistics;
 import sim.components.statistics.SystemStatistics;
 import sim.timer.Timer;
 
 public class FilaComReentrada {
-	public Node source;
+	public ArrivalGenerator source;
 	public FIFO queue;
 	public ExponentialTimeServer server;
 	public Sink nSink;
 	public SystemStatistics ss;
 	public DepartureFlowStatistics ds;
 
-	public FilaComReentrada(Node source, Double serverLambda) {
+	public FilaComReentrada(ArrivalGenerator source, Double serverLambda) {
 		this.source = source;
 		queue = new FIFO();
 		server = new ExponentialTimeServer(serverLambda);
@@ -64,7 +63,7 @@ public class FilaComReentrada {
 	public static void main(String[] argc) {
 		Double lambda = 0.9D;
 		Double mi = 1D;
-		Node source = new DeterministicSource(lambda);
+		ArrivalGenerator source = new DeterministicSource(lambda);
 		FilaComReentrada n = new FilaComReentrada(source, mi);
 
 		n.start();
