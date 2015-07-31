@@ -24,8 +24,10 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 	String id;
 
 	Integer jobs_in_system;
-	Integer job_count;
+	Integer arrival_count;
 	Integer total_jobs;
+	Integer arrival_on_empty;
+	Integer departure_on_empty;
 	Double job_x_time;
 	Double time_in_use;
 	Double last_update;
@@ -46,11 +48,12 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 		time_in_use = 0D;
 		total_jobs = 0;
 		total_time_on_sistem = 0D;
-		job_count=0;
+		arrival_count = 0;
+		departure_on_empty = 0;
 	}
 
 	public Double utilization() {
-		return (time_in_use + jobs_in_system > 0 ? Timer.now() - last_update : 0D) / Timer.now();
+		return (time_in_use + (jobs_in_system > 0 ? Timer.now() - last_update : 0D)) / Timer.now();
 	}
 
 	public Double meanJobInSystem() {
@@ -59,6 +62,10 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 
 	public Double meanTimeInSystem() {
 		return total_jobs > 0 ? total_time_on_sistem / total_jobs : 0;
+	}
+
+	public Double arrivalOnEmpty() {
+		return ((double) arrival_on_empty) / arrival_count;
 	}
 
 	@Override
@@ -71,8 +78,11 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 		jobs_in_system--;
 		total_jobs++;
 		total_time_on_sistem += Timer.now() - arrival_time;
-		String line = job_id + " " + Timer.now() + "\n";
 		last_update = Timer.now();
+		if (total_time_on_sistem == 0) {
+			departure_on_empty++;
+		}
+		String line = job_id + " " + Timer.now() + "\n";
 		try {
 			departureLog.write(line.getBytes());
 		} catch (IOException e) {
@@ -87,8 +97,10 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 		job.addDouble(id + ARRAIVAL_SUFIX, Timer.now());
 		job_x_time += jobs_in_system * time_slice;
 		time_in_use += jobs_in_system > 0 ? time_slice : 0;
-		String job_id = id + "_" + job_count++;
+		String job_id = id + "_" + arrival_count++;
 		job.addString(id + JOB_ID, job_id);
+		if (jobs_in_system == 0)
+			arrival_on_empty++;
 		jobs_in_system++;
 		String line = job_id + " " + Timer.now() + "\n";
 		last_update = Timer.now();

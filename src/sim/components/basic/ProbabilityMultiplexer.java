@@ -2,7 +2,7 @@ package sim.components.basic;
 
 import java.util.ArrayList;
 
-public class ProbabilityMultiplexer extends Multiplexer {
+public class ProbabilityMultiplexer extends Node {
 
 	private ArrayList<Tuple> sinks;
 	private Double sum;
@@ -18,13 +18,12 @@ public class ProbabilityMultiplexer extends Multiplexer {
 
 	@Override
 	public void connectTo(Sink sink) {
-		connectTo(sink, "1");
+		connectTo(sink, 1D);
 	}
 
-	@Override
-	public void connectTo(Sink sink, String prob) {
+	public void connectTo(Sink sink, Double prob) {
 		Tuple t = new Tuple();
-		t.mass = Double.parseDouble(prob);
+		t.mass = prob;
 		t.sink = sink;
 		sum += t.mass;
 		sinks.add(t);

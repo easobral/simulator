@@ -14,32 +14,17 @@ public class ExponentialTimeServer extends SimServer {
 	private Source source;
 	ExponentialGenerator gen;
 
-	Double lastChange=0D;
-	Double totalTimeinQueue=0D;
-	Long totalJobs=0L;
-
-	
-	public Double meanServerTime(){
-		return lastChange>0 ?totalTimeinQueue/lastChange:0D;
-	}
-
-	public Double meanJob(){
-		return lastChange>0 ?totalTimeinQueue/lastChange:0D;
-	}
-
-
 	class JobCompleted extends TimedTask {
 
 		public JobCompleted(Double time) {
-			super.time=time;
+			super.time = time;
 		}
-		
+
 		@Override
 		public void run() {
 			onDeparture(servingJob);
 			sink.send(servingJob);
 			servingJob = null;
-			lastChange=Timer.now();
 			if (source.canGet()) {
 				servingJob = source.get();
 				serveJob();
@@ -84,10 +69,7 @@ public class ExponentialTimeServer extends SimServer {
 
 	private void serveJob() {
 		Double servingTime = gen.get();
-		totalJobs++;
-		totalTimeinQueue+=servingTime;
-		lastChange=Timer.now();
-		Timer.timer.addTask(new JobCompleted(Timer.now()+servingTime));
+		Timer.timer.addTask(new JobCompleted(Timer.now() + servingTime));
 	}
 
 	@Override

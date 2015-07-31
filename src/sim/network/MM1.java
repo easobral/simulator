@@ -38,11 +38,6 @@ public class MM1 {
 		server.connectFrom(queue);
 		Timer.timer=new Timer();
 	}
-
-	public void close(){
-		queue.closeFile();
-	}
-
 	
 	public void start(){
 		Timer.timer = new Timer();
@@ -56,19 +51,6 @@ public class MM1 {
 		Double mi = 1D;
 		
 		MM1 n = new MM1(lambda,mi);
-		
-		n.start();
-
-		System.out.println("Tempo na fila: " + n.queue.meanQueueTime());
-		System.out.println("Clientes na fila: " + n.queue.meanJob());
-		System.out.println("Tempo no servidor: " + n.server.meanServerTime());
-		System.out.println("Clientes no servidor: " + n.server.meanJob());
-
-		System.out.println("Little: " + lambda*n.queue.meanQueueTime() + " = " + n.queue.meanJob());
-		System.out.println("Little: " + lambda/mi + " = " + n.server.meanJob());
-		System.out.println("Período Ocupado:" + lambda/mi + " = " + n.server.meanJob());
-
-		n.close();
 	}
 	
 

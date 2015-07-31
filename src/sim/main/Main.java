@@ -1,7 +1,5 @@
 package sim.main;
 
-import sim.network.MM1;
-
 public class Main {
 
 	/**
@@ -63,25 +61,6 @@ public class Main {
 	}
 	
 	static void run (){
-		MM1 n = new MM1(lambda,mi,file);
-		
-		n.start();
-
-		System.out.println("Tempo na fila: " + n.queue.meanQueueTime());
-		tempo_na_fila+= n.queue.meanQueueTime();
-		System.out.println("Clientes na fila: " + n.queue.meanJob());
-		clientes_na_fila+= n.queue.meanJob();
-		System.out.println("Tempo no servidor: " + n.server.meanServerTime());
-		tempo_no_servidor+=n.server.meanServerTime();
-		System.out.println("Clientes no servidor: " + n.server.meanJob());
-		clientes_no_servidor+=n.server.meanJob();
-		System.out.println("Little: " + lambda*n.queue.meanQueueTime() + " = " + n.queue.meanJob());
-		System.out.println("Little: " + lambda/mi + " = " + n.server.meanJob());
-		System.out.println("Período Ocupado:" + lambda/mi + " = " + n.server.meanJob());
-		System.out.println("\n\n----------------------------------------------------------\n\n");
-
-		n.close();
-		
 		
 	}
 
