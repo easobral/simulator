@@ -4,6 +4,11 @@ public class DummyNode extends Node {
 
 	Source source;
 	Sink sink;
+	
+	public DummyNode(){
+		source=null;
+		sink=null;
+	}
 
 	public DummyNode(Source source, Sink sink) {
 		this.source = source;
@@ -12,11 +17,16 @@ public class DummyNode extends Node {
 
 	@Override
 	public boolean canGet() {
+		if(source==null)
+			return false;
 		return source.canGet();
 	}
 
 	@Override
 	public boolean canSend() {
+		if (sink == null){
+			return false;
+		}
 		return sink.canSend();
 	}
 
@@ -34,5 +44,14 @@ public class DummyNode extends Node {
 		onDeparture(job);
 		sink.send(job);
 	}
-
+	
+	@Override
+	public void connectTo(Sink sink){
+		this.sink = sink;
+	}
+	
+	@Override
+	public void connectFrom(Source source){
+		this.source = source;
+	}
 }

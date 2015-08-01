@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class ProbabilityMultiplexer extends Node {
 
 	private ArrayList<Tuple> sinks;
-	private Double sum;
+	private Double sum=0D;
 
 	class Tuple {
 		Double mass;

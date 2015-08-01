@@ -1,12 +1,12 @@
 package sim.network;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import sim.components.basic.DummyNode;
 import sim.components.basic.NullSink;
@@ -24,106 +24,67 @@ import sim.components.statistics.SystemStatistics;
 import sim.timer.Timer;
 
 public class FilaComReentrada {
+
+	static class Nuple {
+		public ArrayList<Double> mean_job = new ArrayList<>();
+		public ArrayList<Double> empty_time = new ArrayList<>();
+		public ArrayList<Double> empty_arrival = new ArrayList<>();
+		public ArrayList<Double> empty_departure = new ArrayList<>();
+	}
+
+	static class Summary {
+		public Double rate;
+		public Double mean_job;
+		public Double empty_time;
+		public Double empty_arrival;
+		public Double empty_departure;
+		public Double mean_job_error;
+		public Double empty_time_error;
+		public Double empty_arrival_error;
+		public Double empty_departure_error;
+	}
+
 	public ArrivalGenerator source;
+	public DummyNode exogenous_entry;
 	public FIFO queue;
 	public ExponentialTimeServer server;
+	public ProbabilityMultiplexer reEnterPoint;
+	public DummyNode exogenous_exit;
 	public Sink nSink;
-	public SystemStatistics ss;
-	public DepartureFlowStatistics ds;
-	public ProbabilityMultiplexer pm;
-	public ArrivalFlowStatistics as;
 
-	FileOutputStream chegada;
-	FileOutputStream saida;
-	FileOutputStream fluxo_saida;
-	FileOutputStream fluxo_saida_servidor;
-	FileOutputStream fluxo_entrada_fila;
+	public SystemStatistics estistica_externa;
+	public SystemStatistics estatistica_interna;
 
-	public FilaComReentrada(ArrivalGenerator source, Double serverLambda) {
-		try {
-			this.source = source;
-			queue = new FIFO();
-			server = new ExponentialTimeServer(serverLambda);
-			nSink = new NullSink();
+	public ArrivalFlowStatistics fluxo_chegadas_compartilhada;
+	public DepartureFlowStatistics fluxo_saida_servidor;
+	public DepartureFlowStatistics fluxo_saida_sistema;
 
-			FileOutputStream chegada = new FileOutputStream("chegada.data");
-			FileOutputStream saida = new FileOutputStream("saida.data");
-			FileOutputStream fluxo_saida = new FileOutputStream("fluxo_saida.data");
+	public FilaComReentrada(ArrivalGenerator source, Double serverLambda, Double p) {
 
-			ss = new SystemStatistics(queue, server, chegada, saida, "cliente");
-			ds = new DepartureFlowStatistics(server, fluxo_saida);
+		this.source = source;
+		queue = new FIFO();
+		exogenous_entry = new DummyNode();
+		server = new ExponentialTimeServer(serverLambda);
+		reEnterPoint = new ProbabilityMultiplexer();
+		exogenous_exit = new DummyNode();
+		nSink = new NullSink();
 
-			source.connectTo(queue);
-			queue.connectTo(server);
-			server.connectTo(nSink);
-			server.connectFrom(queue);
+		source.connectTo(exogenous_entry);
+		exogenous_entry.connectFrom(source);
+		exogenous_entry.connectTo(queue);
+		queue.connectTo(server);
+		server.connectFrom(queue);
+		server.connectTo(reEnterPoint);
+		reEnterPoint.connectTo(queue, p);
+		reEnterPoint.connectTo(exogenous_exit, 1 - p);
+		exogenous_exit.connectTo(nSink);
 
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+		estistica_externa = new SystemStatistics(exogenous_entry, exogenous_exit, "sistema_externo");
+		estatistica_interna = new SystemStatistics(queue, server, "sistema_interno");
+		fluxo_chegadas_compartilhada = new ArrivalFlowStatistics(queue);
+		fluxo_saida_servidor = new DepartureFlowStatistics(server);
+		fluxo_saida_sistema = new DepartureFlowStatistics(exogenous_exit);
 
-	public FilaComReentrada(String dir, ArrivalGenerator source, Double serverLambda) {
-		try {
-			this.source = source;
-			queue = new FIFO();
-			server = new ExponentialTimeServer(serverLambda);
-			nSink = new NullSink();
-
-			chegada = new FileOutputStream(dir + "chegada.data");
-			saida = new FileOutputStream(dir + "saida.data");
-			fluxo_saida = new FileOutputStream(dir + "fluxo_saida.data");
-
-			ss = new SystemStatistics(queue, server, chegada, saida, "cliente");
-			ds = new DepartureFlowStatistics(server, fluxo_saida);
-
-			source.connectTo(queue);
-			queue.connectTo(server);
-			server.connectTo(nSink);
-			server.connectFrom(queue);
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public FilaComReentrada(String dir, ArrivalGenerator source, Double serverLambda, Double p) {
-		try {
-			DummyNode dummy_arrival = new DummyNode(null, null);
-			DummyNode dummy_departure = new DummyNode(null, null);
-
-			this.source = source;
-			queue = new FIFO();
-			server = new ExponentialTimeServer(serverLambda);
-			nSink = new NullSink();
-
-			chegada = new FileOutputStream(dir + "chegada.data");
-			saida = new FileOutputStream(dir + "saida.data");
-			fluxo_saida = new FileOutputStream(dir + "fluxo_saida.data");
-			fluxo_saida_servidor = new FileOutputStream(dir + "fluxo_saida_servidor.data");
-			fluxo_entrada_fila = new FileOutputStream(dir + "fluxo_chegada_fila.data");
-
-			pm = new ProbabilityMultiplexer();
-
-			ss = new SystemStatistics(dummy_arrival, dummy_departure, chegada, saida, "cliente");
-			ds = new DepartureFlowStatistics(dummy_departure, fluxo_saida);
-
-			source.connectTo(queue);
-			source.connectTo(dummy_arrival);
-			dummy_arrival.connectTo(queue);
-			queue.connectTo(server);
-			server.connectFrom(queue);
-			server.connectTo(pm);
-			pm.connectTo(queue, p);
-			pm.connectTo(dummy_departure, 1 - p);
-			dummy_departure.connectTo(nSink);
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public void start() {
@@ -131,23 +92,6 @@ public class FilaComReentrada {
 		source.start();
 		Timer.timer.max_time = 10000D;
 		Timer.timer.start();
-	}
-
-	public void close() {
-		try {
-			chegada.close();
-			saida.close();
-			fluxo_saida.close();
-			if (fluxo_entrada_fila != null) {
-				fluxo_entrada_fila.close();
-			}
-			if (fluxo_saida_servidor != null) {
-				fluxo_saida_servidor.close();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public static void main(String[] argc) {
@@ -159,211 +103,159 @@ public class FilaComReentrada {
 	}
 
 	public static void scenario01(Integer runs) {
-		String dir = "Data/cenario_1/";
+		String dir = "data/cenario01/";
 		ArrayList<Double> lambda = new ArrayList<>();
-		lambda.add(0.05D);
-		lambda.add(0.1D);
-		lambda.add(0.15D);
-		lambda.add(0.2D);
-		lambda.add(0.25D);
-		lambda.add(0.3D);
-		lambda.add(0.35D);
-		lambda.add(0.4D);
-		lambda.add(0.45D);
-		lambda.add(0.5D);
-		lambda.add(0.55D);
-		lambda.add(0.6D);
-		lambda.add(0.65D);
-		lambda.add(0.7D);
-		lambda.add(0.75);
-		lambda.add(0.8D);
-		lambda.add(0.85D);
-		lambda.add(0.9D);
-
+		for (int i = 1; 0.05 * i < 0.91; i++) {
+			lambda.add(i * 0.05);
+		}
 		Double mi = 1D;
+
 		FilaComReentrada fila;
 		ArrivalGenerator source;
+		ArrayList<Summary> summary = new ArrayList<>();
 
-		ArrayList<Double> samples_time = new ArrayList<>();
-		ArrayList<Double> samples_job = new ArrayList<>();
+		for (Double rate : lambda) {
+			Nuple samples = new Nuple();
 
-		FileWriter file;
-		try {
-			FileWriter sumary = new FileWriter(dir + "summary.data");
-			sumary.write("# taxa media_tempo erro_padrao_tempo media_trabalho erro_padrao_trabalho");
-			System.out.println("Scenario01");
-			for (Double rate : lambda) {
-				file = new FileWriter(dir + "lambda_" + rate + ".data");
-				for (int i = 0; i < runs; i++) {
-					source = new ExponentialSource(rate);
-					fila = new FilaComReentrada(dir, source, mi);
-					fila.start();
-					String line = "" + fila.ss.meanTimeInSystem() + " " + fila.ss.meanJobInSystem() + "\n";
-					file.write(line);
-					samples_job.add(fila.ss.meanJobInSystem());
-					samples_time.add(fila.ss.meanTimeInSystem());
-					fila.close();
-				}
-				file.close();
-				NumberFormat f = new DecimalFormat("0.0000000000");
-				Double mean_time = calculate_mean(samples_time);
-				Double sd_time = 1.96 * calculate_sd(samples_time, mean_time);
-				Double mean_job = calculate_mean(samples_job);
-				Double sd_job = 1.96 * calculate_sd(samples_job, mean_job);
-				sumary.write("" + rate + " " + mean_time + " " + sd_time);
-				sumary.write(" " + mean_job + " " + sd_job + "\n");
-				System.out.println("Finished: " + rate);
-				System.out.println("time_mean:" + f.format(mean_time) + "\n" + "time_sd: " + f.format(sd_time));
-				System.out.println("job_mean:" + f.format(mean_job) + "\n" + "job_sd: " + f.format(sd_job));
-				System.out.println("---------------------------------");
+			for (int i = 0; i < runs; i++) {
+				source = new ExponentialSource(rate);
+				fila = new FilaComReentrada(source, mi, 0D);
+				fila.start();
+				addSample(samples, fila);
 			}
-			System.out.println("\n\n\n\n\n\n\n\n\n");
-			sumary.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			write_run_data(rate, samples, dir);
+			calculate_statistics(summary, rate, samples);
+			print_data(summary.get(summary.size() - 1));
 		}
-
+		write_summary(summary, dir);
 	}
 
 	public static void scenario02(Integer runs) {
-		String dir = "Data/cenario_2/";
+		String dir = "data/cenario02/";
 		ArrayList<Double> lambda = new ArrayList<>();
-		lambda.add(0.05D);
-		lambda.add(0.1D);
-		lambda.add(0.15D);
-		lambda.add(0.2D);
-		lambda.add(0.25D);
-		lambda.add(0.3D);
-		lambda.add(0.35D);
-		lambda.add(0.4D);
-		lambda.add(0.45D);
-		lambda.add(0.5D);
-		lambda.add(0.55D);
-		lambda.add(0.6D);
-		lambda.add(0.65D);
-		lambda.add(0.7D);
-		lambda.add(0.75);
-		lambda.add(0.8D);
-		lambda.add(0.85D);
-		lambda.add(0.9D);
-
+		for (int i = 1; 0.05 * i < 0.91; i++) {
+			lambda.add(i * 0.05);
+		}
 		Double mi = 1D;
+
 		FilaComReentrada fila;
 		ArrivalGenerator source;
+		ArrayList<Summary> summary = new ArrayList<>();
 
-		ArrayList<Double> samples_time = new ArrayList<>();
-		ArrayList<Double> samples_job = new ArrayList<>();
+		for (Double rate : lambda) {
+			Nuple samples = new Nuple();
 
-		FileWriter file;
-		try {
-			FileWriter sumary = new FileWriter(dir + "summary.data");
-			sumary.write("# taxa media_tempo erro_padrao_tempo media_trabalho erro_padrao_trabalho");
-
-			for (Double rate : lambda) {
-				file = new FileWriter(dir + "lambda_" + rate + ".data");
-				for (int i = 0; i < runs; i++) {
-					source = new DeterministicSource(rate);
-					fila = new FilaComReentrada(dir, source, mi);
-					fila.start();
-					String line = "" + fila.ss.meanTimeInSystem() + " " + fila.ss.meanJobInSystem() + "\n";
-					file.write(line);
-					fila.close();
-					samples_job.add(fila.ss.meanJobInSystem());
-					samples_time.add(fila.ss.meanTimeInSystem());
-				}
-				file.close();
-				NumberFormat f = new DecimalFormat("0.0000000000");
-				Double mean_time = calculate_mean(samples_time);
-				Double sd_time = 1.96 * calculate_sd(samples_time, mean_time);
-				Double mean_job = calculate_mean(samples_job);
-				Double sd_job = 1.96 * calculate_sd(samples_job, mean_job);
-				sumary.write("" + rate + " " + mean_time + " " + sd_time);
-				sumary.write(" " + mean_job + " " + sd_job + "\n");
-				System.out.println("Finished: " + rate);
-				System.out.println("time_mean:" + f.format(mean_time) + "\n" + "time_sd: " + f.format(sd_time));
-				System.out.println("job_mean:" + f.format(mean_job) + "\n" + "job_sd: " + f.format(sd_job));
-				System.out.println("---------------------------------");
+			for (int i = 0; i < runs; i++) {
+				source = new DeterministicSource(rate);
+				fila = new FilaComReentrada(source, mi, 0D);
+				fila.start();
+				addSample(samples, fila);
 			}
-			sumary.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			write_run_data(rate, samples, dir);
+			calculate_statistics(summary, rate, samples);
+			print_data(summary.get(summary.size() - 1));
+		}
+		write_summary(summary, dir);
+	}
+
+	public static void scenario03(Integer runs) {
+		String dir = "data/cenario03/";
+		ArrayList<Double> mi = new ArrayList<>();
+
+		for (int i = 0; 0.5 * i < 9.1; i++) {
+			mi.add(1 + i * 0.5);
+		}
+
+		FilaComReentrada fila;
+		ArrivalGenerator source;
+		ArrayList<Summary> summary = new ArrayList<>();
+
+		for (Double rate : mi) {
+			Nuple samples = new Nuple();
+
+			for (int i = 0; i < runs; i++) {
+				source = new UniformSource(5D, 15D);
+				fila = new FilaComReentrada(source, rate, 0D);
+				fila.start();
+				addSample(samples, fila);
+			}
+			write_run_data(rate, samples, dir);
+			calculate_statistics(summary, rate, samples);
+			print_data(summary.get(summary.size() - 1));
+		}
+		write_summary(summary, dir);
+
+	}
+
+	private static void write_summary(ArrayList<Summary> summary, String dir) {
+		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.US);
+		NumberFormat f = new DecimalFormat("0.00", otherSymbols);
+		try {
+			FileWriter file = new FileWriter(dir + "summary" + ".data");
+			for (Summary s : summary) {
+				file.write("" + f.format(s.rate) + " ");
+				file.write("" + s.mean_job + " ");
+				file.write("" + s.mean_job_error + " ");
+				file.write("" + s.empty_time + " ");
+				file.write("" + s.empty_time_error + " ");
+				file.write("" + s.empty_arrival + " ");
+				file.write("" + s.empty_arrival_error + " ");
+				file.write("" + s.empty_departure + " ");
+				file.write("" + s.empty_departure_error + "\n");
+			}
+			file.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	public static void scenario03(Integer runs) {
-		String dir = "Data/cenario_3/";
-		ArrayList<Double> mi = new ArrayList<>();
-		mi.add(1D);
-		mi.add(1.5D);
-		mi.add(2D);
-		mi.add(2.5D);
-		mi.add(3D);
-		mi.add(3.5D);
-		mi.add(4D);
-		mi.add(4.5D);
-		mi.add(5D);
-		mi.add(5.5D);
-		mi.add(6D);
-		mi.add(6.5D);
-		mi.add(7D);
-		mi.add(7.5D);
-		mi.add(8D);
-		mi.add(8.5D);
-		mi.add(9D);
-		mi.add(9.5D);
-		mi.add(10D);
+	private static void print_data(Summary summary) {
+		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.US);
+		NumberFormat f = new DecimalFormat("0.00", otherSymbols);
+		System.out.println("Finished: " + f.format(summary.rate));
+	}
 
-		FilaComReentrada fila;
-		ArrivalGenerator source;
+	private static void calculate_statistics(ArrayList<Summary> summary, Double rate, Nuple samples) {
+		Summary s = new Summary();
+		s.rate = rate;
 
-		ArrayList<Double> samples_time = new ArrayList<>();
-		ArrayList<Double> samples_job = new ArrayList<>();
+		Double mean = calculate_mean(samples.mean_job);
+		Double error = calculate_standard_error(samples.mean_job, mean);
+		s.mean_job = mean;
+		s.mean_job_error = error;
 
-		FileWriter file;
+		mean = calculate_mean(samples.empty_arrival);
+		error = calculate_standard_error(samples.empty_arrival, mean);
+		s.empty_arrival = mean;
+		s.empty_arrival_error = error;
+
+		mean = calculate_mean(samples.empty_time);
+		error = calculate_standard_error(samples.empty_time, mean);
+		s.empty_time = mean;
+		s.empty_time_error = error;
+
+		mean = calculate_mean(samples.empty_departure);
+		error = calculate_standard_error(samples.empty_departure, mean);
+		s.empty_departure = mean;
+		s.empty_departure_error = error;
+
+		summary.add(s);
+
+	}
+
+	private static void write_run_data(Double rate, Nuple samples, String dir) {
+		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.US);
+		NumberFormat f = new DecimalFormat("0.00", otherSymbols);
 		try {
-			FileWriter sumary = new FileWriter(dir + "summary.data");
-			sumary.write("# taxa media_tempo erro_padrao_tempo media_trabalho erro_padrao_trabalho");
-
-			for (Double rate : mi) {
-				file = new FileWriter(dir + "mi_" + rate + ".data");
-				for (int i = 0; i < runs; i++) {
-					source = new UniformSource(5D, 15D);
-					fila = new FilaComReentrada(dir, source, rate);
-					fila.start();
-					String line = "" + fila.ss.meanTimeInSystem() + " " + fila.ss.meanJobInSystem() + "\n";
-					fila.close();
-					file.write(line);
-					samples_job.add(fila.ss.meanJobInSystem());
-					samples_time.add(fila.ss.meanTimeInSystem());
-				}
-				file.close();
-				NumberFormat f = new DecimalFormat("0.0000000000");
-				Double mean_time = calculate_mean(samples_time);
-				Double sd_time = 1.96 * calculate_sd(samples_time, mean_time);
-				Double mean_job = calculate_mean(samples_job);
-				Double sd_job = 1.96 * calculate_sd(samples_job, mean_job);
-				sumary.write("" + rate + " " + mean_time + " " + sd_time);
-				sumary.write(" " + mean_job + " " + sd_job + "\n");
-				System.out.println("Finished: " + rate);
-				System.out.println("time_mean:" + f.format(mean_time) + "\n" + "time_sd: " + f.format(sd_time));
-				System.out.println("job_mean:" + f.format(mean_job) + "\n" + "job_sd: " + f.format(sd_job));
-				System.out.println("---------------------------------");
+			FileWriter file = new FileWriter(dir + "rate_" + f.format(rate) + ".data");
+			for (int i = 0; i < samples.empty_arrival.size(); i++) {
+				String line = "" + samples.mean_job.get(i) + " " + samples.empty_time.get(i) + " "
+						+ samples.empty_arrival.get(i) + " " + samples.empty_departure.get(i) + "\n";
+				file.write(line);
 			}
-			sumary.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			file.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -377,12 +269,24 @@ public class FilaComReentrada {
 		return sum / samples.size();
 	}
 
+	private static Double calculate_standard_error(ArrayList<Double> samples, Double mean) {
+		return 1.96 * calculate_sd(samples, mean);
+	}
+
 	private static Double calculate_sd(ArrayList<Double> samples, Double mean) {
 		Double sum = 0D;
 		for (Double sample : samples) {
-			sum += (sample - mean) * (sample - mean);
+			Double d = sample - mean;
+			sum += d * d;
 		}
 		Double var = sum / (samples.size() - 1);
 		return Math.sqrt(var / samples.size());
+	}
+
+	private static void addSample(Nuple samples, FilaComReentrada fila) {
+		samples.mean_job.add(fila.estistica_externa.meanJobInSystem());
+		samples.empty_arrival.add(fila.estatistica_interna.arrivalOnEmptyFraction());
+		samples.empty_departure.add(fila.estistica_externa.departureOnEmptyFraction());
+		samples.empty_time.add(1 - fila.estatistica_interna.utilization());
 	}
 }

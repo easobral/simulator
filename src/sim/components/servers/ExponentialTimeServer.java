@@ -26,8 +26,7 @@ public class ExponentialTimeServer extends SimServer {
 			sink.send(servingJob);
 			servingJob = null;
 			if (source.canGet()) {
-				servingJob = source.get();
-				serveJob();
+				serveJob(source.get());
 			}
 		}
 	}
@@ -60,14 +59,14 @@ public class ExponentialTimeServer extends SimServer {
 
 	@Override
 	public void send(Job job) {
-		onArrival(job);
 		if (servingJob == null) {
-			servingJob = job;
-			serveJob();
+			serveJob(job);
 		}
 	}
 
-	private void serveJob() {
+	private void serveJob(Job job) {
+		onArrival(job);
+		servingJob = job;
 		Double servingTime = gen.get();
 		Timer.timer.addTask(new JobCompleted(Timer.now() + servingTime));
 	}

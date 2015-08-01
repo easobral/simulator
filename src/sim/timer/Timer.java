@@ -15,7 +15,7 @@ public class Timer {
 	public static void addTaskS(TimedTask task){
 		timer.addTask(task);
 	}
-	
+		
 	private PriorityQueue<TimedTask> taskQueue;
 	private boolean _should_stop;
 	private double _time;
@@ -44,6 +44,7 @@ public class Timer {
 	}
 
 	public void start() {
+		beforeStart();
 		while (!shouldStop()) {
 			try {
 				beforeLoop();
@@ -53,8 +54,22 @@ public class Timer {
 				System.out.println(e.msg);
 			}
 		}
+		afterEnd();
 	}
 	
+	public void beforeStart() {
+		addTask(new TimedTask(max_time, new Runnable() {		
+			@Override
+			public void run() {
+				_should_stop=true;
+			}
+		}));
+
+	}
+
+	public void afterEnd() {		
+	}
+
 	public void doLoop () throws TaskInPastException{
 		TimedTask task = taskQueue.poll();
 		if (_time > task.time){

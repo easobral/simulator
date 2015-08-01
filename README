@@ -1,0 +1,30 @@
+os resultados das simulações estão na pasta data.
+
+As informações dos cenarios 1,2,3,4,5 e 6 estão nas respectivas pastas.
+
+rate_*.data
+	informações das rodadas com a taxa *.
+	cada linha representa uma rodada.
+	cada linha apresenta 4 colunas separadas por espaço:
+	 	numero médio de clientes na fila
+		tempo médio com a fila vazia
+		fração das chegadas que encontram o sistema vazio(endogena+exogena).
+		fração das saídas que encontram o sistema vazio(exogena).
+  
+summary.data
+	resumo das informações das rodadas.
+	cada linha representa um valor de taxa.
+	possui 9 colunas separadas por espaço:
+		taxa
+		numero medio dos clientes
+		erro padrão do numero medio dos clientes
+		fração do tempo com sistema vazio
+		erro padrão do tempo com sistema vazio
+		fração de chegadas com o sistema vazio(endogena+exogena)
+		erro padrão das chegadas com o sistema vazio
+		fração das saídas que deixam o sistema vazio (exogenas)
+		erro padrao das saídas que deixam o sistema vazio.
+		
+		
+		
+		

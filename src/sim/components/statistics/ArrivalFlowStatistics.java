@@ -1,7 +1,6 @@
 package sim.components.statistics;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.util.ArrayList;
 
 import sim.components.basic.ArrivalListener;
 import sim.components.basic.Job;
@@ -10,27 +9,22 @@ import sim.timer.Timer;
 
 public class ArrivalFlowStatistics implements ArrivalListener {
 
-	OutputStream out;
+	ArrayList<Double> arrival_time;
+	ArrayList<Double> arrival_interval;
 	Double last_arrival=0D;
 	Node node;
 
-	public ArrivalFlowStatistics(Node node, OutputStream out) {
+	public ArrivalFlowStatistics(Node node) {
 		this.node = node;
 		node.addArrivalListener(this);
-		this.out=out;
+		arrival_time = new ArrayList<>();
+		arrival_interval = new ArrayList<>();
 	}
 
 	@Override
 	public void onArrival(Job job) {
-		Double time = Timer.now();
-		Double interval = time - last_arrival;
-		String line = "" + time + " " + interval;
-		last_arrival=time;
-		try {
-			out.write(line.getBytes());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		arrival_time.add(Timer.now());
+		arrival_interval.add(Timer.now()-last_arrival);
+		last_arrival=Timer.now();
 	}
 }
