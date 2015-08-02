@@ -100,6 +100,9 @@ public class FilaComReentrada {
 		scenario01(100);
 		scenario02(100);
 		scenario03(100);
+		scenario04(100);
+		scenario05(100);
+		scenario06(100);
 
 	}
 
@@ -195,6 +198,100 @@ public class FilaComReentrada {
 
 	}
 
+	public static void scenario04(Integer runs) {
+		String dir = "data/cenario04/";
+		create_dir(dir);
+		ArrayList<Double> mi = new ArrayList<>();
+
+		for (int i = 0; 0.5 * i < 9.1; i++) {
+			mi.add(1 + i * 0.5);
+		}
+
+		FilaComReentrada fila = null;
+		ArrivalGenerator source;
+		ArrayList<Summary> summary = new ArrayList<>();
+
+		for (Double rate : mi) {
+			Nuple samples = new Nuple();
+
+			for (int i = 0; i < runs; i++) {
+				source = new ExponentialSource(0.01D);
+				fila = new FilaComReentrada(source, rate, 0.9D);
+				fila.start();
+				addSample(samples, fila);
+			}
+			write_run_data(rate, samples, dir);
+			calculate_statistics(summary, rate, samples);
+			print_data(summary.get(summary.size() - 1));
+		}
+		write_summary(summary, dir);
+		write_arrivals(fila, dir);
+
+	}
+
+	public static void scenario05(Integer runs) {
+		String dir = "data/cenario05/";
+		create_dir(dir);
+		ArrayList<Double> mi = new ArrayList<>();
+
+		for (int i = 0; 0.5 * i < 9.1; i++) {
+			mi.add(1 + i * 0.5);
+		}
+
+		FilaComReentrada fila = null;
+		ArrivalGenerator source;
+		ArrayList<Summary> summary = new ArrayList<>();
+
+		for (Double rate : mi) {
+			Nuple samples = new Nuple();
+
+			for (int i = 0; i < runs; i++) {
+				source = new DeterministicSource(0.01D);
+				fila = new FilaComReentrada(source, rate, 0.9D);
+				fila.start();
+				addSample(samples, fila);
+			}
+			write_run_data(rate, samples, dir);
+			calculate_statistics(summary, rate, samples);
+			print_data(summary.get(summary.size() - 1));
+		}
+		write_summary(summary, dir);
+		write_arrivals(fila, dir);
+
+	}
+
+	public static void scenario06(Integer runs) {
+		String dir = "data/cenario06/";
+		create_dir(dir);
+		ArrayList<Double> mi = new ArrayList<>();
+
+		for (int i = 0; 0.5 * i < 9.1; i++) {
+			mi.add(1 + i * 0.5);
+		}
+
+		FilaComReentrada fila = null;
+		ArrivalGenerator source;
+		ArrayList<Summary> summary = new ArrayList<>();
+
+		for (Double rate : mi) {
+			Nuple samples = new Nuple();
+
+			for (int i = 0; i < runs; i++) {
+				source = new UniformSource(50D,150D);
+				fila = new FilaComReentrada(source, rate, 0.9D);
+				fila.start();
+				addSample(samples, fila);
+			}
+			write_run_data(rate, samples, dir);
+			calculate_statistics(summary, rate, samples);
+			print_data(summary.get(summary.size() - 1));
+		}
+		write_summary(summary, dir);
+		write_arrivals(fila, dir);
+
+	}
+
+	
 	private static void write_arrivals(FilaComReentrada fila, String dir) {
 		try {
 			FileWriter file = new FileWriter(dir + "fluxo_saida_exogeno.data");
