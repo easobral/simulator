@@ -9,8 +9,8 @@ import sim.timer.Timer;
 
 public class DepartureFlowStatistics implements DepartureListener {
 
-	ArrayList<Double> departure_time;
-	ArrayList<Double> departure_interval;
+	public ArrayList<Double> departure_time;
+	public ArrayList<Double> departure_interval;
 	Double last_departure = 0D;
 	Node node;
 

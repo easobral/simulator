@@ -1,5 +1,6 @@
 package sim.network;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -104,13 +105,14 @@ public class FilaComReentrada {
 
 	public static void scenario01(Integer runs) {
 		String dir = "data/cenario01/";
+		create_dir(dir);
 		ArrayList<Double> lambda = new ArrayList<>();
 		for (int i = 1; 0.05 * i < 0.91; i++) {
 			lambda.add(i * 0.05);
 		}
 		Double mi = 1D;
 
-		FilaComReentrada fila;
+		FilaComReentrada fila = null;
 		ArrivalGenerator source;
 		ArrayList<Summary> summary = new ArrayList<>();
 
@@ -128,17 +130,19 @@ public class FilaComReentrada {
 			print_data(summary.get(summary.size() - 1));
 		}
 		write_summary(summary, dir);
+		write_arrivals(fila, dir);
 	}
 
 	public static void scenario02(Integer runs) {
 		String dir = "data/cenario02/";
+		create_dir(dir);
 		ArrayList<Double> lambda = new ArrayList<>();
 		for (int i = 1; 0.05 * i < 0.91; i++) {
 			lambda.add(i * 0.05);
 		}
 		Double mi = 1D;
 
-		FilaComReentrada fila;
+		FilaComReentrada fila = null;
 		ArrivalGenerator source;
 		ArrayList<Summary> summary = new ArrayList<>();
 
@@ -156,17 +160,20 @@ public class FilaComReentrada {
 			print_data(summary.get(summary.size() - 1));
 		}
 		write_summary(summary, dir);
+		write_arrivals(fila, dir);
+
 	}
 
 	public static void scenario03(Integer runs) {
 		String dir = "data/cenario03/";
+		create_dir(dir);
 		ArrayList<Double> mi = new ArrayList<>();
 
 		for (int i = 0; 0.5 * i < 9.1; i++) {
 			mi.add(1 + i * 0.5);
 		}
 
-		FilaComReentrada fila;
+		FilaComReentrada fila = null;
 		ArrivalGenerator source;
 		ArrayList<Summary> summary = new ArrayList<>();
 
@@ -184,7 +191,43 @@ public class FilaComReentrada {
 			print_data(summary.get(summary.size() - 1));
 		}
 		write_summary(summary, dir);
+		write_arrivals(fila, dir);
 
+	}
+
+	private static void write_arrivals(FilaComReentrada fila, String dir) {
+		try {
+			FileWriter file = new FileWriter(dir + "fluxo_saida_exogeno.data");
+			ArrayList<Double> time = fila.fluxo_saida_sistema.departure_time;
+			ArrayList<Double> interval = fila.fluxo_saida_sistema.departure_interval;
+			for (int i = 0; i < time.size(); i++) {
+				String line = "" + time.get(i) + " " + interval.get(i) +"\n";
+				file.write(line);
+			}
+			file.close();
+
+			file = new FileWriter(dir + "fluxo_saida_servidor.data");
+			time = fila.fluxo_saida_servidor.departure_time;
+			interval = fila.fluxo_saida_servidor.departure_interval;
+			for (int i = 0; i < time.size(); i++) {
+				String line = "" + time.get(i) + " " + interval.get(i) +"\n";
+				file.write(line);
+			}
+			file.close();
+
+			
+			file = new FileWriter(dir + "fluxo_entrada_compartilhada.data");
+			time = fila.fluxo_chegadas_compartilhada.arrival_time;
+			interval = fila.fluxo_chegadas_compartilhada.arrival_interval;
+			for (int i = 0; i < time.size(); i++) {
+				String line = "" + time.get(i) + " " + interval.get(i) +"\n";
+				file.write(line);
+			}
+			file.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void write_summary(ArrayList<Summary> summary, String dir) {
@@ -289,4 +332,10 @@ public class FilaComReentrada {
 		samples.empty_departure.add(fila.estistica_externa.departureOnEmptyFraction());
 		samples.empty_time.add(1 - fila.estatistica_interna.utilization());
 	}
+
+	private static void create_dir(String dir) {
+		File f = new File(dir);
+		f.mkdirs();
+	}
+
 }

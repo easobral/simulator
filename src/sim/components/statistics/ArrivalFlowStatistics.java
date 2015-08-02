@@ -9,8 +9,8 @@ import sim.timer.Timer;
 
 public class ArrivalFlowStatistics implements ArrivalListener {
 
-	ArrayList<Double> arrival_time;
-	ArrayList<Double> arrival_interval;
+	public ArrayList<Double> arrival_time;
+	public ArrayList<Double> arrival_interval;
 	Double last_arrival=0D;
 	Node node;
 
