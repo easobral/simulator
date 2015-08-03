@@ -46,12 +46,6 @@ public class MM1 {
 		Timer.timer.start();
 	}
 	
-	public static void main (String[] argc){
-		Double lambda = 0.5D;
-		Double mi = 1D;
-		
-		MM1 n = new MM1(lambda,mi);
-	}
 	
 
 }

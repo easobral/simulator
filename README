@@ -1,5 +1,9 @@
 os resultados das simulações estão na pasta data.
 
+**********************************************************
+*                   Fila com Reentrada                   *
+**********************************************************
+
 As informações dos cenarios 1,2,3,4,5 e 6 estão nas respectivas pastas.
 
 rate_*.data
@@ -25,6 +29,26 @@ summary.data
 		fração das saídas que deixam o sistema vazio (exogenas)
 		erro padrao das saídas que deixam o sistema vazio.
 		
+fluxo_*1_cdf_*2.data
+	cdf do fluxo *1, com taxa *2
+	cada linha representa um ponto na cdf
+	possui duas colunas separadas por espaço:
+		quantil
+		valor acumulado
+		
+fluxo_*_*2.data
+	dados do fluxo *1 com taxa *2
+	cada linha representa uma chegada ou uma saída
+	possui duas colunas separadas por espaço:
+		tempo da chegada ou saída
+		tempo desde a última chegada ou saída
 		
 		
 		
+****************************************************
+*                 Sistema Academia                 *
+****************************************************		
+
+
+
+

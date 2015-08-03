@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 
 import sim.components.basic.DummyNode;
@@ -88,25 +89,25 @@ public class FilaComReentrada {
 
 	}
 
-	public void start() {
+	public void start(Double time) {
 		Timer.timer = new Timer();
 		source.start();
-		Timer.timer.max_time = 10000D;
+		Timer.timer.max_time = time;
 		Timer.timer.start();
 	}
 
 	public static void main(String[] argc) {
 
-		scenario01(100);
-		scenario02(100);
-		scenario03(100);
-		scenario04(100);
-		scenario05(100);
-		scenario06(100);
+		scenario01(100, 10000D);
+		scenario02(100, 10000D);
+		scenario03(100, 10000D);
+		scenario04(100, 100000D);
+		scenario05(100, 100000D);
+		scenario06(100, 100000D);
 
 	}
 
-	public static void scenario01(Integer runs) {
+	public static void scenario01(Integer runs, Double time) {
 		String dir = "data/cenario01/";
 		create_dir(dir);
 		ArrayList<Double> lambda = new ArrayList<>();
@@ -125,18 +126,18 @@ public class FilaComReentrada {
 			for (int i = 0; i < runs; i++) {
 				source = new ExponentialSource(rate);
 				fila = new FilaComReentrada(source, mi, 0D);
-				fila.start();
+				fila.start(time);
 				addSample(samples, fila);
 			}
 			write_run_data(rate, samples, dir);
 			calculate_statistics(summary, rate, samples);
 			print_data(summary.get(summary.size() - 1));
+			write_arrivals(fila, dir, rate);
 		}
 		write_summary(summary, dir);
-		write_arrivals(fila, dir);
 	}
 
-	public static void scenario02(Integer runs) {
+	public static void scenario02(Integer runs, Double time) {
 		String dir = "data/cenario02/";
 		create_dir(dir);
 		ArrayList<Double> lambda = new ArrayList<>();
@@ -155,19 +156,19 @@ public class FilaComReentrada {
 			for (int i = 0; i < runs; i++) {
 				source = new DeterministicSource(rate);
 				fila = new FilaComReentrada(source, mi, 0D);
-				fila.start();
+				fila.start(time);
 				addSample(samples, fila);
 			}
 			write_run_data(rate, samples, dir);
 			calculate_statistics(summary, rate, samples);
 			print_data(summary.get(summary.size() - 1));
+			write_arrivals(fila, dir, rate);
 		}
 		write_summary(summary, dir);
-		write_arrivals(fila, dir);
 
 	}
 
-	public static void scenario03(Integer runs) {
+	public static void scenario03(Integer runs, Double time) {
 		String dir = "data/cenario03/";
 		create_dir(dir);
 		ArrayList<Double> mi = new ArrayList<>();
@@ -186,19 +187,19 @@ public class FilaComReentrada {
 			for (int i = 0; i < runs; i++) {
 				source = new UniformSource(5D, 15D);
 				fila = new FilaComReentrada(source, rate, 0D);
-				fila.start();
+				fila.start(time);
 				addSample(samples, fila);
 			}
 			write_run_data(rate, samples, dir);
 			calculate_statistics(summary, rate, samples);
 			print_data(summary.get(summary.size() - 1));
+			write_arrivals(fila, dir, rate);
 		}
 		write_summary(summary, dir);
-		write_arrivals(fila, dir);
 
 	}
 
-	public static void scenario04(Integer runs) {
+	public static void scenario04(Integer runs, Double time) {
 		String dir = "data/cenario04/";
 		create_dir(dir);
 		ArrayList<Double> mi = new ArrayList<>();
@@ -217,19 +218,19 @@ public class FilaComReentrada {
 			for (int i = 0; i < runs; i++) {
 				source = new ExponentialSource(0.01D);
 				fila = new FilaComReentrada(source, rate, 0.9D);
-				fila.start();
+				fila.start(time);
 				addSample(samples, fila);
 			}
 			write_run_data(rate, samples, dir);
 			calculate_statistics(summary, rate, samples);
 			print_data(summary.get(summary.size() - 1));
+			write_arrivals(fila, dir, rate);
 		}
 		write_summary(summary, dir);
-		write_arrivals(fila, dir);
 
 	}
 
-	public static void scenario05(Integer runs) {
+	public static void scenario05(Integer runs, Double time) {
 		String dir = "data/cenario05/";
 		create_dir(dir);
 		ArrayList<Double> mi = new ArrayList<>();
@@ -248,19 +249,19 @@ public class FilaComReentrada {
 			for (int i = 0; i < runs; i++) {
 				source = new DeterministicSource(0.01D);
 				fila = new FilaComReentrada(source, rate, 0.9D);
-				fila.start();
+				fila.start(time);
 				addSample(samples, fila);
 			}
 			write_run_data(rate, samples, dir);
 			calculate_statistics(summary, rate, samples);
 			print_data(summary.get(summary.size() - 1));
+			write_arrivals(fila, dir, rate);
 		}
 		write_summary(summary, dir);
-		write_arrivals(fila, dir);
 
 	}
 
-	public static void scenario06(Integer runs) {
+	public static void scenario06(Integer runs, Double time) {
 		String dir = "data/cenario06/";
 		create_dir(dir);
 		ArrayList<Double> mi = new ArrayList<>();
@@ -277,47 +278,75 @@ public class FilaComReentrada {
 			Nuple samples = new Nuple();
 
 			for (int i = 0; i < runs; i++) {
-				source = new UniformSource(50D,150D);
+				source = new UniformSource(50D, 150D);
 				fila = new FilaComReentrada(source, rate, 0.9D);
-				fila.start();
+				fila.start(time);
 				addSample(samples, fila);
 			}
 			write_run_data(rate, samples, dir);
 			calculate_statistics(summary, rate, samples);
 			print_data(summary.get(summary.size() - 1));
+			write_arrivals(fila, dir, rate);
 		}
 		write_summary(summary, dir);
-		write_arrivals(fila, dir);
 
 	}
 
-	
-	private static void write_arrivals(FilaComReentrada fila, String dir) {
+	private static void write_arrivals(FilaComReentrada fila, String dir, Double rate) {
+		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.US);
+		NumberFormat f = new DecimalFormat("0.00", otherSymbols);
 		try {
-			FileWriter file = new FileWriter(dir + "fluxo_saida_exogeno.data");
+			FileWriter file = new FileWriter(dir + "fluxo_saida_exogeno_" + f.format(rate) + ".data");
 			ArrayList<Double> time = fila.fluxo_saida_sistema.departure_time;
 			ArrayList<Double> interval = fila.fluxo_saida_sistema.departure_interval;
+
 			for (int i = 0; i < time.size(); i++) {
-				String line = "" + time.get(i) + " " + interval.get(i) +"\n";
+				String line = "" + time.get(i) + " " + interval.get(i) + "\n";
 				file.write(line);
 			}
 			file.close();
 
-			file = new FileWriter(dir + "fluxo_saida_servidor.data");
+			file = new FileWriter(dir + "fluxo_saida_exogeno_cdf_" + f.format(rate) + ".data");
+			Collections.sort(interval);
+
+			for (int i = 0; i < interval.size(); i++) {
+				String line = "" + interval.get(i) + " " + ((double) (i + 1)) / interval.size() + "\n";
+				file.write(line);
+			}
+			file.close();
+
+			file = new FileWriter(dir + "fluxo_saida_servidor_" + f.format(rate) + ".data");
 			time = fila.fluxo_saida_servidor.departure_time;
 			interval = fila.fluxo_saida_servidor.departure_interval;
 			for (int i = 0; i < time.size(); i++) {
-				String line = "" + time.get(i) + " " + interval.get(i) +"\n";
+				String line = "" + time.get(i) + " " + interval.get(i) + "\n";
 				file.write(line);
 			}
 			file.close();
 
-			
-			file = new FileWriter(dir + "fluxo_entrada_compartilhada.data");
+			file = new FileWriter(dir + "fluxo_saida_servidor_cdf_" + f.format(rate) + ".data");
+			Collections.sort(interval);
+
+			for (int i = 0; i < interval.size(); i++) {
+				String line = "" + interval.get(i) + " " + ((double) (i + 1)) / interval.size() + "\n";
+				file.write(line);
+			}
+			file.close();
+
+			file = new FileWriter(dir + "fluxo_entrada_compartilhada_" + f.format(rate) + ".data");
 			time = fila.fluxo_chegadas_compartilhada.arrival_time;
 			interval = fila.fluxo_chegadas_compartilhada.arrival_interval;
 			for (int i = 0; i < time.size(); i++) {
-				String line = "" + time.get(i) + " " + interval.get(i) +"\n";
+				String line = "" + time.get(i) + " " + interval.get(i) + "\n";
+				file.write(line);
+			}
+			file.close();
+
+			file = new FileWriter(dir + "fluxo_entrada_compartilhada_cdf_" + f.format(rate) + ".data");
+			Collections.sort(interval);
+
+			for (int i = 0; i < interval.size(); i++) {
+				String line = "" + interval.get(i) + " " + ((double) (i + 1)) / interval.size() + "\n";
 				file.write(line);
 			}
 			file.close();
