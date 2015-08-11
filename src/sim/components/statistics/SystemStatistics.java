@@ -1,5 +1,7 @@
 package sim.components.statistics;
 
+import java.util.ArrayList;
+
 import sim.components.basic.ArrivalListener;
 import sim.components.basic.DepartureListener;
 import sim.components.basic.Job;
@@ -28,6 +30,9 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 	Double time_in_use;
 	Double last_update;
 	Double total_time_on_sistem;
+	
+	public ArrayList<Double> time;
+	public ArrayList<Integer> jobs;
 
 	public SystemStatistics(Node entryNode, Node exitNode, String id) {
 		entryNode.addArrivalListener(this);
@@ -44,6 +49,8 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 		arrival_count = 0;
 		departure_on_empty = 0;
 		arrival_on_empty = 0;
+		time = new ArrayList<>();
+		jobs = new ArrayList<>();
 	}
 
 	public Double utilization() {
@@ -83,6 +90,9 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 		if (jobs_in_system == 0) {
 			departure_on_empty++;
 		}
+		
+		time.add(Timer.now());
+		jobs.add(jobs_in_system);
 	}
 
 	@Override
@@ -97,5 +107,8 @@ public class SystemStatistics implements ArrivalListener, DepartureListener {
 			arrival_on_empty++;
 		jobs_in_system++;
 		last_update = Timer.now();
+		
+		time.add(Timer.now());
+		jobs.add(jobs_in_system);
 	}
 }

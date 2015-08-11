@@ -130,7 +130,7 @@ public class SistemaAcademia {
 		SistemaAcademia sistema = null;
 		Nuple samples = new Nuple();
 
-		Summary summary=null;
+		Summary summary = null;
 		for (int i = 0; i < runs; i++) {
 			sistema = new SistemaAcademia(1D, 0.9D, 5D, 5D, 0.1D);
 			sistema.start(time);
@@ -141,16 +141,17 @@ public class SistemaAcademia {
 		print_data(summary);
 		write_arrivals(sistema, dir);
 		write_summary(summary, dir);
+		write_jobs_vs_time(sistema, dir);
 
 	}
-	
+
 	private static void cenario02(Integer runs, Double time) {
 		String dir = "data/academia/02/";
 		create_dir(dir);
 		SistemaAcademia sistema = null;
 		Nuple samples = new Nuple();
 
-		Summary summary=null;
+		Summary summary = null;
 		for (int i = 0; i < runs; i++) {
 			sistema = new SistemaAcademia(0.1D, 0.9D, 1D, 1D, 0.1D);
 			sistema.start(time);
@@ -161,16 +162,17 @@ public class SistemaAcademia {
 		print_data(summary);
 		write_arrivals(sistema, dir);
 		write_summary(summary, dir);
+		write_jobs_vs_time(sistema, dir);
 
 	}
-	
+
 	private static void cenario03(Integer runs, Double time) {
 		String dir = "data/academia/03/";
 		create_dir(dir);
 		SistemaAcademia sistema = null;
 		Nuple samples = new Nuple();
 
-		Summary summary=null;
+		Summary summary = null;
 		for (int i = 0; i < runs; i++) {
 			sistema = new SistemaAcademia(0.9D, 0.9D, 1D, 1D, 10D);
 			sistema.start(time);
@@ -181,7 +183,41 @@ public class SistemaAcademia {
 		print_data(summary);
 		write_arrivals(sistema, dir);
 		write_summary(summary, dir);
+		write_jobs_vs_time(sistema, dir);
+	}
 
+	private static void write_jobs_vs_time(SistemaAcademia sis, String dir) {
+		try {
+			SystemStatistics s = sis.sistema;
+
+			FileWriter file;
+			file = new FileWriter(dir + "time_job_sis.data");
+
+			for (int i = 0; i < s.time.size(); i++) {
+				file.write(s.time.get(i) + " " + s.jobs.get(i) + "\n");
+			}
+
+			file.close();
+
+			s = sis.esteira;
+			file = new FileWriter(dir + "time_job_esteira.data");
+			for (int i = 0; i < s.time.size(); i++) {
+				file.write(s.time.get(i) + " " + s.jobs.get(i) + "\n");
+			}
+
+			file.close();
+
+			s = sis.bike;
+			file = new FileWriter(dir + "time_job_bike.data");
+			for (int i = 0; i < s.time.size(); i++) {
+				file.write(s.time.get(i) + " " + s.jobs.get(i) + "\n");
+			}
+
+			file.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void write_summary(Summary summary, String dir) {
@@ -192,7 +228,7 @@ public class SistemaAcademia {
 			file.write(summary.media_utilizacao_esteira + " ");
 			file.write(summary.error_utilizacao_esteira + " ");
 			file.write(summary.media_utilizacao_bike + " ");
-			file.write(""+summary.error_utilizacao_bike);
+			file.write("" + summary.error_utilizacao_bike);
 			file.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -297,7 +333,7 @@ public class SistemaAcademia {
 		error = calculate_standard_error(samples.utilizacao_bike, mean);
 		s.media_utilizacao_bike = mean;
 		s.error_utilizacao_bike = error;
-		
+
 		return s;
 	}
 
